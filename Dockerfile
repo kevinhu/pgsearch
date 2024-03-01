@@ -5,12 +5,16 @@ FROM postgres:${PG_VERSION_MAJOR}-bookworm as pgsearch
 
 ARG PG_VERSION_MAJOR=16
 ARG PLATFORM=amd64
+ARG PG_BM25_VERSION=0.5.7
+ARG VECTORS_VERSION=0.2.0
 
 ENV PG_VERSION_MAJOR=${PG_VERSION_MAJOR} \
     POSTHOG_API_KEY='' \
     POSTHOG_HOST='' \
     PARADEDB_TELEMETRY=false \
-    PLATFORM=${PLATFORM}
+    PLATFORM=${PLATFORM} \
+    PG_BM25_VERSION=${PG_BM25_VERSION} \
+    VECTORS_VERSION=${VECTORS_VERSION}
 
 # Install runtime dependencies (requires switching to root temporarily)
 USER root
@@ -19,10 +23,10 @@ RUN apt-get remove libicu-dev -y
 RUN apt-get install curl uuid-runtime libpq5 -y
 RUN apt-get install postgresql-server-dev-all postgresql-16-cron -y
 
-RUN curl -fsSL https://github.com/paradedb/paradedb/releases/download/v0.5.7/pg_bm25-v0.5.7-pg16-${PLATFORM}-ubuntu2204.deb -o /tmp/pg_bm25.deb
+RUN curl -fsSL https://github.com/paradedb/paradedb/releases/download/v0.5.7/pg_bm25-v${PG_BM25_VERSION}-pg${PG_VERSION_MAJOR}-${PLATFORM}-ubuntu2204.deb -o /tmp/pg_bm25.deb
 RUN dpkg -i /tmp/pg_bm25.deb
 
-RUN curl -fsSL https://github.com/tensorchord/pgvecto.rs/releases/download/v0.2.0/vectors-pg16_0.2.0_${PLATFORM}.deb -o /tmp/vectors.deb
+RUN curl -fsSL https://github.com/tensorchord/pgvecto.rs/releases/download/v0.2.0/vectors-pg${PG_VERSION_MAJOR}_${VECTORS_VERSION}_${PLATFORM}.deb -o /tmp/vectors.deb
 RUN dpkg -i /tmp/vectors.deb
 
 RUN if [ "$PLATFORM" = "arm64" ]; then curl -fsSL http://ports.ubuntu.com/pool/main/i/icu/libicu70_70.1-2_arm64.deb -o /tmp/libicu70.deb; else curl -fsSL http://archive.ubuntu.com/ubuntu/pool/main/i/icu/libicu70_70.1-2_amd64.deb -o /tmp/libicu70.deb; fi
