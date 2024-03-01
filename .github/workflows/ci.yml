@@ -48,8 +48,4 @@ jobs:
           tags: ghcr.io/kevinhu/pgsearch:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
-
-    #   - name: "Build Inventory Image"
-    #     run: |
-    #       docker build . --tag ghcr.io/kevinhu/pgsearch:latest
-    #       docker push ghcr.io/kevinhu/pgsearch:latest
+          build-args: PLATFORM=${{ matrix.platform }}
