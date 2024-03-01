@@ -3,5 +3,5 @@
 To build:
 
 ```bash
-docker build --build-arg PLATFORM=arm64 . --tag pgsearch:latest --network host
+docker build . --tag pgsearch:latest --network host
 ```
