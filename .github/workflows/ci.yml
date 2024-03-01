@@ -45,7 +45,7 @@ jobs:
           context: .
           push: true
           platforms: "linux/${{ matrix.platform }}"
-          tags: ghcr.io/kevinhu/pgsearch:latest-${{ matrix.platform }}
+          tags: ghcr.io/kevinhu/pgsearch:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
