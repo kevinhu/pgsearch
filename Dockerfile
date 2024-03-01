@@ -25,7 +25,7 @@ RUN dpkg -i /tmp/pg_bm25.deb
 RUN curl -fsSL https://github.com/tensorchord/pgvecto.rs/releases/download/v0.2.0/vectors-pg16_0.2.0_${PLATFORM}.deb -o /tmp/vectors.deb
 RUN dpkg -i /tmp/vectors.deb
 
-RUN curl -fsSL http://ports.ubuntu.com/pool/main/i/icu/libicu70_70.1-2_${PLATFORM}.deb -o /tmp/libicu70.deb
+RUN if [ "$PLATFORM" = "arm64" ]; then curl -fsSL http://ports.ubuntu.com/pool/main/i/icu/libicu70_70.1-2_arm64.deb -o /tmp/libicu70.deb; else curl -fsSL http://archive.ubuntu.com/ubuntu/pool/main/i/icu/libicu70_70.1-2_amd64.deb -o /tmp/libicu70.deb; fi
 RUN dpkg -i /tmp/libicu70.deb
 USER 1001
 
