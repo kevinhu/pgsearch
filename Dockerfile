@@ -39,7 +39,6 @@ RUN rm /tmp/libicu70.deb
 RUN apt-get clean autoclean
 RUN apt-get autoremove --yes
 RUN rm -rf /var/lib/{apt,dpkg,cache,log}/
-USER 1001
 
 # Copy ParadeDB bootstrap script to install extensions, configure postgresql.conf, etc.
 # COPY ./docker/01_bootstrap.sh /docker-entrypoint-initdb.d/
@@ -48,3 +47,11 @@ COPY ./01_bootstrap.sh /docker-entrypoint-initdb.d/
 # Configure shared_preload_libraries
 # Note: pgaudit is needed here as it comes pre-packaged in the Bitnami image
 ENV POSTGRESQL_SHARED_PRELOAD_LIBRARIES="pgaudit,pg_cron,pg_bm25,vectors"
+
+# Change the uid of postgres to 26
+RUN usermod -u 26 postgres \
+    && chown -R 26:999 /var/lib/postgresql \
+    && chown -R 26:999 /var/run/postgresql \
+    && chmod -R 700 /var/lib/postgresql
+
+USER 26
