@@ -8,13 +8,13 @@ set -Eeuo pipefail
 
 # If no user is set, the default user will be the `postgres` superuser, so we
 # set the superuser password to default to the user password in that case
-SUPERUSER_PASSWORD=${POSTGRESQL_POSTGRES_PASSWORD:-$POSTGRESQL_PASSWORD}
+SUPERUSER_PASSWORD=${POSTGRESQL_POSTGRES_PASSWORD:-$POSTGRES_PASSWORD}
 
 echo "ParadeDB bootstrap started..."
 echo "Configuring PostgreSQL search path..."
 
 # Add the `paradedb` schema to the user database, and default to public (by listing it first)
-PGPASSWORD=$POSTGRESQL_PASSWORD psql -U "$POSTGRESQL_USERNAME" -d "$POSTGRESQL_DATABASE" -c "ALTER DATABASE $POSTGRESQL_DATABASE SET search_path TO public,paradedb,vectors;"
+PGPASSWORD=$POSTGRES_PASSWORD psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "ALTER DATABASE $POSTGRES_DB SET search_path TO public,paradedb,vectors;"
 
 # Add the `paradedb` schema to the template1 database, to have it inherited by all new databases
 # created post-initialization, and default to public (by listing it first)
@@ -23,7 +23,7 @@ PGPASSWORD=$SUPERUSER_PASSWORD psql -U postgres -d template1 -c "ALTER DATABASE 
 echo "Configuring PostgreSQL permissions..."
 
 # Grant pg_read_all_settings role to the user (necessary for pg_analytics and general database introspection)
-PGPASSWORD=$SUPERUSER_PASSWORD psql -U postgres -d "$POSTGRESQL_DATABASE" -c "GRANT pg_read_all_settings TO \"$POSTGRESQL_USERNAME\";"
+PGPASSWORD=$SUPERUSER_PASSWORD psql -U postgres -d "$POSTGRES_DB" -c "GRANT pg_read_all_settings TO \"$POSTGRES_USER\";"
 
 echo "Installing PostgreSQL extensions..."
 
@@ -34,14 +34,14 @@ echo "Installing PostgreSQL extensions..."
 #
 # For simplicity, and because we don't expect most users to use pg_cron, we don't force a restart here and we don't pre-create the
 # extension, leaving it to the user to do it if they want to use it.
-# echo "cron.database_name = '$POSTGRESQL_DATABASE'" >>"/opt/bitnami/postgresql/conf/postgresql.conf"
+# echo "cron.database_name = '$POSTGRES_DB'" >>"/opt/bitnami/postgresql/conf/postgresql.conf"
 
 # Pre-install all required PostgreSQL extensions to the user database via the `postgres` superuser
-PGPASSWORD=$SUPERUSER_PASSWORD psql -U postgres -d "$POSTGRESQL_DATABASE" -c "CREATE EXTENSION IF NOT EXISTS pg_bm25 CASCADE;"
-# PGPASSWORD=$SUPERUSER_PASSWORD psql -U postgres -d "$POSTGRESQL_DATABASE" -c "CREATE EXTENSION IF NOT EXISTS pg_analytics CASCADE;"
-# PGPASSWORD=$SUPERUSER_PASSWORD psql -U postgres -d "$POSTGRESQL_DATABASE" -c "CREATE EXTENSION IF NOT EXISTS svector CASCADE;"
-# PGPASSWORD=$SUPERUSER_PASSWORD psql -U postgres -d "$POSTGRESQL_DATABASE" -c "CREATE EXTENSION IF NOT EXISTS vector CASCADE;"
-PGPASSWORD=$SUPERUSER_PASSWORD psql -U postgres -d "$POSTGRESQL_DATABASE" -c "CREATE EXTENSION IF NOT EXISTS vectors CASCADE;"
+PGPASSWORD=$SUPERUSER_PASSWORD psql -U postgres -d "$POSTGRES_DB" -c "CREATE EXTENSION IF NOT EXISTS pg_bm25 CASCADE;"
+# PGPASSWORD=$SUPERUSER_PASSWORD psql -U postgres -d "$POSTGRES_DB" -c "CREATE EXTENSION IF NOT EXISTS pg_analytics CASCADE;"
+# PGPASSWORD=$SUPERUSER_PASSWORD psql -U postgres -d "$POSTGRES_DB" -c "CREATE EXTENSION IF NOT EXISTS svector CASCADE;"
+# PGPASSWORD=$SUPERUSER_PASSWORD psql -U postgres -d "$POSTGRES_DB" -c "CREATE EXTENSION IF NOT EXISTS vector CASCADE;"
+PGPASSWORD=$SUPERUSER_PASSWORD psql -U postgres -d "$POSTGRES_DB" -c "CREATE EXTENSION IF NOT EXISTS vectors CASCADE;"
 
 # Pre-install all required PostgreSQL extensions to the template1 database, to have them inherited by all new
 # databases created post-initialization, via the `postgres` user
