@@ -12,9 +12,7 @@ ENV PG_VERSION_MAJOR=${PG_VERSION_MAJOR} \
     POSTHOG_API_KEY='' \
     POSTHOG_HOST='' \
     PARADEDB_TELEMETRY=false \
-    TARGETARCH=${TARGETARCH} \
-    PG_BM25_VERSION=${PG_BM25_VERSION} \
-    VECTORS_VERSION=${VECTORS_VERSION}
+    TARGETARCH=${TARGETARCH}
 
 # Install runtime dependencies (requires switching to root temporarily)
 USER root
@@ -23,10 +21,12 @@ RUN apt-get remove libicu-dev -y
 RUN apt-get install curl uuid-runtime libpq5 -y
 RUN apt-get install postgresql-server-dev-all postgresql-16-cron -y
 
+ENV PG_BM25_VERSION=${PG_BM25_VERSION}
 RUN curl -fsSL https://github.com/paradedb/paradedb/releases/download/v${PG_BM25_VERSION}/pg_bm25-v${PG_BM25_VERSION}-pg${PG_VERSION_MAJOR}-${TARGETARCH}-ubuntu2204.deb -o /tmp/pg_bm25.deb
 RUN dpkg -i /tmp/pg_bm25.deb
 RUN rm /tmp/pg_bm25.deb
 
+ENV VECTORS_VERSION=${VECTORS_VERSION}
 RUN curl -fsSL https://github.com/tensorchord/pgvecto.rs/releases/download/v${VECTORS_VERSION}/vectors-pg${PG_VERSION_MAJOR}_${VECTORS_VERSION}_${TARGETARCH}.deb -o /tmp/vectors.deb
 RUN dpkg -i /tmp/vectors.deb
 RUN rm /tmp/vectors.deb
