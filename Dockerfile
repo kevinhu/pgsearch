@@ -23,11 +23,11 @@ RUN apt-get remove libicu-dev -y
 RUN apt-get install curl uuid-runtime libpq5 -y
 RUN apt-get install postgresql-server-dev-all postgresql-16-cron -y
 
-RUN curl -fsSL https://github.com/paradedb/paradedb/releases/download/v0.5.7/pg_bm25-v${PG_BM25_VERSION}-pg${PG_VERSION_MAJOR}-${TARGETARCH}-ubuntu2204.deb -o /tmp/pg_bm25.deb
+RUN curl -fsSL https://github.com/paradedb/paradedb/releases/download/v${PG_BM25_VERSION}/pg_bm25-v${PG_BM25_VERSION}-pg${PG_VERSION_MAJOR}-${TARGETARCH}-ubuntu2204.deb -o /tmp/pg_bm25.deb
 RUN dpkg -i /tmp/pg_bm25.deb
 RUN rm /tmp/pg_bm25.deb
 
-RUN curl -fsSL https://github.com/tensorchord/pgvecto.rs/releases/download/v0.2.0/vectors-pg${PG_VERSION_MAJOR}_${VECTORS_VERSION}_${TARGETARCH}.deb -o /tmp/vectors.deb
+RUN curl -fsSL https://github.com/tensorchord/pgvecto.rs/releases/download/v${VECTORS_VERSION}/vectors-pg${PG_VERSION_MAJOR}_${VECTORS_VERSION}_${TARGETARCH}.deb -o /tmp/vectors.deb
 RUN dpkg -i /tmp/vectors.deb
 RUN rm /tmp/vectors.deb
 
