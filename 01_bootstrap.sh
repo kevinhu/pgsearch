@@ -14,11 +14,11 @@ echo "ParadeDB bootstrap started..."
 echo "Configuring PostgreSQL search path..."
 
 # Add the `paradedb` schema to the user database, and default to public (by listing it first)
-PGPASSWORD=$POSTGRESQL_PASSWORD psql -U "$POSTGRESQL_USERNAME" -d "$POSTGRESQL_DATABASE" -c "ALTER DATABASE $POSTGRESQL_DATABASE SET search_path TO public,paradedb;"
+PGPASSWORD=$POSTGRESQL_PASSWORD psql -U "$POSTGRESQL_USERNAME" -d "$POSTGRESQL_DATABASE" -c "ALTER DATABASE $POSTGRESQL_DATABASE SET search_path TO public,paradedb,vectors;"
 
 # Add the `paradedb` schema to the template1 database, to have it inherited by all new databases
 # created post-initialization, and default to public (by listing it first)
-PGPASSWORD=$SUPERUSER_PASSWORD psql -U postgres -d template1 -c "ALTER DATABASE template1 SET search_path TO public,paradedb;"
+PGPASSWORD=$SUPERUSER_PASSWORD psql -U postgres -d template1 -c "ALTER DATABASE template1 SET search_path TO public,paradedb,vectors;"
 
 echo "Configuring PostgreSQL permissions..."
 
@@ -34,7 +34,7 @@ echo "Installing PostgreSQL extensions..."
 #
 # For simplicity, and because we don't expect most users to use pg_cron, we don't force a restart here and we don't pre-create the
 # extension, leaving it to the user to do it if they want to use it.
-echo "cron.database_name = '$POSTGRESQL_DATABASE'" >>"/opt/bitnami/postgresql/conf/postgresql.conf"
+# echo "cron.database_name = '$POSTGRESQL_DATABASE'" >>"/opt/bitnami/postgresql/conf/postgresql.conf"
 
 # Pre-install all required PostgreSQL extensions to the user database via the `postgres` superuser
 PGPASSWORD=$SUPERUSER_PASSWORD psql -U postgres -d "$POSTGRESQL_DATABASE" -c "CREATE EXTENSION IF NOT EXISTS pg_bm25 CASCADE;"
